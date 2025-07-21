@@ -2,49 +2,50 @@
 const express = require('express');
 const app = express();
 
-// Permitir CORS para pruebas de freeCodeCamp
+const PORT = process.env.PORT || 3000;
+
+// Middleware para habilitar CORS (si lo necesitas)
 const cors = require('cors');
-app.use(cors({ optionsSuccessStatus: 200 }));
+app.use(cors());
 
-// Servir archivos estáticos (como index.html)
-app.use(express.static('public'));
-
-// Ruta raíz (opcional)
+// Ruta base, puedes poner una bienvenida simple
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.send('Timestamp Microservice');
 });
 
-// Ruta principal del API
+// API endpoint con parámetro opcional :date
 app.get('/api/:date?', (req, res) => {
-  const { date } = req.params;
+  let dateString = req.params.date;
 
-  let parsedDate;
-
-  // Si no se proporciona parámetro, usar fecha actual
-  if (!date) {
-    parsedDate = new Date();
-  } else if (!isNaN(date)) {
-    // Si el parámetro es numérico, tratar como timestamp en milisegundos
-    parsedDate = new Date(parseInt(date));
-  } else {
-    // Si es una cadena, tratar de parsear como fecha estándar
-    parsedDate = new Date(date);
+  // Si no se envía parámetro, usa la fecha actual
+  if (!dateString) {
+    let now = new Date();
+    return res.json({
+      unix: now.getTime(),
+      utc: now.toUTCString()
+    });
   }
 
-  // Validación de fecha inválida
-  if (parsedDate.toString() === 'Invalid Date') {
-    return res.json({ error: 'Invalid Date' });
+  // Si el dateString es solo números (timestamp unix en ms), parsearlo como número
+  // Ejemplo: 1451001600000
+  if (/^\d+$/.test(dateString)) {
+    dateString = parseInt(dateString);
   }
 
-  // Respuesta válida
+  const date = new Date(dateString);
+
+  // Validar fecha inválida
+  if (date.toString() === 'Invalid Date') {
+    return res.json({ error: "Invalid Date" });
+  }
+
+  // Responder con objeto JSON correcto
   res.json({
-    unix: parsedDate.getTime(),
-    utc: parsedDate.toUTCString(),
+    unix: date.getTime(),
+    utc: date.toUTCString()
   });
 });
 
-// Escuchar en el puerto asignado por Render o 3000 localmente
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
