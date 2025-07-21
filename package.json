@@ -1,0 +1,23 @@
+{
+  "name": "timestamp-microservice",
+  "version": "1.0.0",
+  "description": "A simple timestamp microservice for freeCodeCamp backend certification",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "timestamp",
+    "microservice",
+    "freeCodeCamp",
+    "api",
+    "nodejs",
+    "express"
+  ],
+  "author": "Gonzalo",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}
